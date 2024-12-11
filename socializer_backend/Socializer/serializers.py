@@ -6,7 +6,20 @@ from django.contrib.auth.models import User
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
-        fields = '__all__'
+        fields = ['id', 'name', 'description', 'address',
+                  'contact_info', 'interests']
+
+        def update(self, instance, validated_data):
+            instance.name = validated_data.get('name', instance.name)
+            instance.description = validated_data.get(
+                'description', instance.description)
+            instance.address = validated_data.get('address', instance.address)
+            instance.contact_info = validated_data.get(
+                'contact_info', instance.contact_info)
+            instance.interests = validated_data.get(
+                'interests', instance.interests)
+            instance.save()
+            return instance
 
 
 class UserSerializer(serializers.ModelSerializer):

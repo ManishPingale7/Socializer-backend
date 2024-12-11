@@ -45,7 +45,19 @@ class ProfileDetail(APIView):
         serializer = ProfileSerializer(profile)
         return Response(serializer.data)
 
+    # Update single profile
+    def put(self, request, pk):
+        try:
+            profile = Profile.objects.get(pk=pk)
+        except Profile.DoesNotExist:
+            return Response({"error": "Profile not found"}, status=404)
+        serializer = ProfileSerializer(profile, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=200)
+        return Reponse(serializer.error, status=400)
     # Delete single profile
+
     def delete(self, request, pk):
         try:
             profile = Profile.objects.get(pk=pk)
