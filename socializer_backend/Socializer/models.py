@@ -1,9 +1,11 @@
 from django.db import models
+from django.conf import settings
+from django.db.models.signals import pre_init, post_save
 
 
 class Profile(models.Model):
     name = models.CharField(max_length=100)
-    photo = models.ImageField(upload_to='photos/')
+    photo = models.URLField(max_length=500)
     description = models.TextField()
     address = models.CharField(max_length=255)
     contact_info = models.CharField(max_length=100)
