@@ -7,6 +7,7 @@ class Profile(models.Model):
     name = models.CharField(max_length=100)
     photo = models.CharField(max_length=500)
     description = models.TextField()
+    username = models.CharField(max_length=100)
     latitude = models.FloatField(max_length=20)
     longitude = models.FloatField(max_length=20)
     address = models.CharField(max_length=255)

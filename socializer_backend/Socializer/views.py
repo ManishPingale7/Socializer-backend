@@ -55,7 +55,6 @@ class ProfileListCreate(APIView):
 
     # Create single profile
     def post(self, request):
-
         serializer = ProfileSerializer(data=request.data)
 
         if serializer.is_valid():
@@ -69,25 +68,37 @@ class ProfileDetail(APIView):
     permission_classes = [IsAuthenticated]
 
     # Get single profile
-    def get(self, request, pk):
+    def get(self, request, *args, **kwargs):
+        pk = kwargs.get('pk')
+        username = kwargs.get('username')
+
         try:
-            profile = Profile.objects.get(pk=pk)
+            if pk:
+                profile = Profile.objects.get(pk=pk)
+            elif username:
+                profile = Profile.objects.get(username=username)
+            else:
+                return Response({'error': 'Invalid request'}, status=400)
         except Profile.DoesNotExist:
             return Response({'error': 'Profile not found'}, status=404)
+
         serializer = ProfileSerializer(profile)
         return Response(serializer.data)
 
-    # Update single profile
     def put(self, request, pk):
         try:
             profile = Profile.objects.get(pk=pk)
+            print("found profile", profile)
         except Profile.DoesNotExist:
             return Response({"error": "Profile not found"}, status=404)
         serializer = ProfileSerializer(profile, data=request.data)
         if serializer.is_valid():
+            print("valid")
             serializer.save()
             return Response(serializer.data, status=200)
-        return Reponse(serializer.error, status=400)
+        else:
+            print("Not valid", serializer.data)
+            return Response("Error", status=400)
     # Delete single profile
 
     def delete(self, request, pk):
