@@ -5,6 +5,7 @@ from .models import Profile
 from .serializers import ProfileSerializer, UserSerializer
 from django.contrib.auth import authenticate
 from rest_framework.permissions import AllowAny
+from django.db.models import Q
 
 
 class RegisterView(APIView):
@@ -47,13 +48,21 @@ class ProfileListCreate(APIView):
 
     # Get all profiles
     def get(self, request):
-        profiles = Profile.objects.all()
+        search_query = request.query_params.get('query', None)
+        if not search_query:
+            profiles = Profile.objects.all()
+            serializer = ProfileSerializer(profiles, many=True)
+            return Response(serializer.data)
+        else:
+            filter_conditions = Q(username__icontains=search_query) |\
+                Q(interests__icontains=search_query) | \
+                Q(description__icontains=search_query) | \
+                Q(address__icontains=search_query)
+            profiles = Profile.objects.filter(filter_conditions)
+            serializer = ProfileSerializer(profiles, many=True)
+            print(serializer.data)
+            return Response(serializer.data, 200)
 
-        serializer = ProfileSerializer(profiles, many=True)
-
-        return Response(serializer.data)
-
-    # Create single profile
     def post(self, request):
         serializer = ProfileSerializer(data=request.data)
 
