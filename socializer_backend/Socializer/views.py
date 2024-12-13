@@ -74,7 +74,8 @@ class ProfileListCreate(APIView):
 
 
 class ProfileDetail(APIView):
-    permission_classes = [IsAuthenticated]
+    authentication_classes = []  # Disable authentication for this view
+    permission_classes = [AllowAny]
 
     # Get single profile
     def get(self, request, *args, **kwargs):
